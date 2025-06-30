@@ -1,4 +1,4 @@
-name: CI Pipeline for TaskList
+name: CI/CD Pipeline for TaskList
 
 on:
   push:
@@ -6,8 +6,10 @@ on:
       - master
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
     - name: Check out repository code
@@ -28,7 +30,7 @@ jobs:
         context: ./backend
         file: ./backend/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_BACKEND }}:latest
+        tags: ${{ secrets.DOCKER_BACKEND }}:latest,${{ secrets.DOCKER_BACKEND }}:${{ github.sha }}
 
     - name: Build and push Frontend Docker image
       uses: docker/build-push-action@v5
@@ -36,4 +38,25 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_FRONTEND }}:latest
+        tags: ${{ secrets.DOCKER_FRONTEND }}:latest,${{ secrets.DOCKER_FRONTEND }}:${{ github.sha }}
+
+    - name: Install yq
+      run: |
+        sudo wget https://github.com/mikefarah/yq/releases/download/v4.44.1/yq_linux_amd64 -O /usr/bin/yq
+        sudo chmod +x /usr/bin/yq
+
+    - name: Update Kubernetes Backend Deployment image
+      run: |
+        yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_BACKEND }}:${{ github.sha }}"' -i k8s/backend-deployment.yaml
+
+    - name: Update Kubernetes Frontend Deployment image
+      run: |
+        yq e '.spec.template.spec.containers[0].image = "${{ secrets.DOCKER_FRONTEND }}:${{ github.sha }}"' -i k8s/frontend-deployment.yaml
+
+    - name: Commit and push Kubernetes manifest changes
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add k8s/backend-deployment.yaml k8s/frontend-deployment.yaml
+        git commit -m "CD: Update image tags to ${{ github.sha }}" || echo "No changes to commit"
+        git push
