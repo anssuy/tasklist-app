@@ -16,14 +16,14 @@ spec:
         app: tasklist-frontend
     spec:
       containers:
-      - name: tasklist-frontend
-        image: anssuy1/tasklist-frontend:latest
-        ports:
-        - containerPort: 80
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "100m"
-          limits:
-            memory: "128Mi"
-            cpu: "200m"
+        - name: tasklist-frontend
+          image: anssuy1/tasklist-frontend:8a5bd4cd80b832506ed0b1a6fa9adae58e478fc8
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
