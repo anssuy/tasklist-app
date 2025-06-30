@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend # Docker ќе го користи контекстот од public директориумот
+      dockerfile: Dockerfile # Специфицирај го frontend Dockerfile-от
+    container_name: tasklist-frontend
+    restart: always
+    ports:
+      - "80:80" # Мапирај го портот на контејнерот (80) на портот на твојот хост (80)
+    depends_on:
+      - backend # Frontend зависи од backend за API комуникација
+
+  backend:
+    build: ./backend # Docker ќе го користи Dockerfile од тековниот директориум
+    container_name: tasklist-backend-service
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_HOST: db # Името на сервисот на базата во Docker Compose мрежата
+    # ports:
+      # - "3000:3000" # Мапирај го портот на контејнерот (3000) на портот на твојот хост (3000)
+    depends_on:
+      - db # Backend зависи од db сервисот
+
+  db:
+    image: postgres:16-alpine
+    container_name: tasklist-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data # Зачувување на податоците перзистентно
+    # ports: # Не е потребно да го експонираш DB портот на хостот ако само апликацијата му пристапува
+    #   - "5432:5432" # Оваа линија можеш да ја оставиш или избришеш, зависи дали сакаш директен пристап од хостот
+
+volumes:
+  db_data: # Дефинирање на волуменот за податоци
+

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasklist-frontend-deployment
+  namespace: tasklist-ns
+  labels:
+    app: tasklist-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tasklist-frontend
+  template:
+    metadata:
+      labels:
+        app: tasklist-frontend
+    spec:
+      containers:
+      - name: tasklist-frontend
+        image: anssuy1/tasklist-frontend:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"

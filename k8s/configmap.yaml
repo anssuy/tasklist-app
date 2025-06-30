@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tasklist-config
+  namespace: tasklist-ns
+data:
+  POSTGRES_DB: tasklist_db
+  POSTGRES_USER: postgres
+  DB_HOST: tasklist-db-service

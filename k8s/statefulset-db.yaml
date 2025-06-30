@@ -1,0 +1,41 @@
+# k8s-db-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tasklist-db-statefulset
+  namespace: tasklist-ns
+  labels:
+    app: tasklist-db
+spec:
+  serviceName: tasklist-db-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasklist-db
+  template:
+    metadata:
+      labels:
+        app: tasklist-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - configMapRef:
+            name: tasklist-config
+        - secretRef:
+            name: tasklist-secrets
+        volumeMounts:
+        - name: db-persistent-storage
+          mountPath: /var/lib/postgresql/data
+
+  volumeClaimTemplates:
+  - metadata:
+      name: db-persistent-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
