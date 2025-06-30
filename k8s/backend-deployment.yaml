@@ -15,20 +15,29 @@ spec:
       labels:
         app: tasklist-backend
     spec:
+      initContainers:
+        - name: wait-for-db
+          image: busybox:1.36
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z tasklist-db-service 5432; do echo Waiting for db; sleep 2; done;",
+            ]
       containers:
-      - name: tasklist-backend
-        image: anssuy1/tasklist-backend:latest
-        ports:
-        - containerPort: 3000
-        envFrom:
-        - configMapRef:
-            name: tasklist-config
-        - secretRef:
-            name: tasklist-secrets
-        resources:
-          requests:
-            memory: "128Mi"
-            cpu: "250m"
-          limits:
-            memory: "256Mi"
-            cpu: "500m"
+        - name: tasklist-backend
+          image: anssuy1/tasklist-backend:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: tasklist-config
+            - secretRef:
+                name: tasklist-secrets
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "250m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
