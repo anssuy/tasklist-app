@@ -6,7 +6,7 @@ metadata:
   labels:
     app: tasklist-backend
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: tasklist-backend
