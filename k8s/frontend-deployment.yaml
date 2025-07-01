@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: tasklist-frontend
-          image: anssuy1/tasklist-frontend:69d3c76b1d6ed4d3301021e2511fdb3eb6201de8
+          image: anssuy1/tasklist-frontend:d977afa3ad5364ae7ba10305f4a5a76245dca3ef
           ports:
             - containerPort: 80
           resources:
