@@ -21,7 +21,7 @@ spec:
           command: ["sh", "-c", "until nc -z tasklist-db-service 5432; do echo Waiting for db; sleep 2; done;"]
       containers:
         - name: tasklist-backend
-          image: anssuy1/tasklist-backend:8a5bd4cd80b832506ed0b1a6fa9adae58e478fc8
+          image: anssuy1/tasklist-backend:6716b321ecfafbdfa40ace11381614068f956258
           ports:
             - containerPort: 3000
           envFrom:
